@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>我们的约定</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #FFF7F9; color: #3a2c31; max-width: 480px; margin: 0 auto;
+    min-height: 100vh; padding-bottom: 90px;
+  }
+
+  /* ===== 顶部导航 ===== */
+  .nav {
+    position: sticky; top: 0; z-index: 50;
+    background: linear-gradient(135deg, #FFA8BE, #FF7A97);
+    color: #fff; padding: 16px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-radius: 0 0 22px 22px;
+    box-shadow: 0 6px 20px rgba(255, 122, 151, .25);
+  }
+  .nav h1 { font-size: 17px; font-weight: 600; letter-spacing: .5px; }
+  .nav .who {
+    font-size: 12px; opacity: .95; background: rgba(255,255,255,.22);
+    padding: 6px 12px; border-radius: 12px; cursor: pointer;
+  }
+
+  /* ===== 通用 ===== */
+  .page { display: none; padding: 18px 16px; }
+  .page.active { display: block; animation: fade .25s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(6px);} to {opacity:1;transform:none;} }
+
+  .card {
+    background: #fff; border-radius: 18px; padding: 16px;
+    margin-bottom: 14px;
+    box-shadow: 0 4px 18px rgba(255, 150, 180, .10);
+    border: 1px solid #FFE8EF;
+  }
+  .section-title {
+    font-size: 14px; font-weight: 600; color: #FF6B8A;
+    margin: 6px 0 12px; display: flex; align-items: center; gap: 6px;
+  }
+  .empty { text-align: center; color: #b9a4ab; font-size: 13px; padding: 34px 0; }
+  .empty .big { font-size: 40px; display: block; margin-bottom: 10px; opacity: .6; }
+
+  .btn {
+    border: none; border-radius: 24px; font-size: 14px;
+    padding: 10px 20px; cursor: pointer; font-weight: 500;
+    transition: transform .12s, opacity .12s; font-family: inherit;
+  }
+  .btn:active { transform: scale(.96); }
+  .btn-primary { background: linear-gradient(135deg, #FF9CB5, #FF6B8A); color: #fff; }
+  .btn-ghost { background: #FFF0F4; color: #FF6B8A; }
+  .btn-gray { background: #f0eef0; color: #8a7a80; }
+  .btn-block { width: 100%; padding: 14px; font-size: 15px; }
+
+  /* ===== 卡片与状态 ===== */
+  .invite { border-left: 4px solid #FF6B8A; }
+  .plan-title { font-size: 16px; font-weight: 600; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+  .meta { font-size: 12.5px; color: #9b8a91; margin-top: 4px; display: flex; align-items: center; gap: 5px; }
+  .actions { display: flex; gap: 10px; margin-top: 14px; }
+  .actions .btn { flex: 1; }
+
+  .badge { font-size: 11px; padding: 3px 10px; border-radius: 10px; font-weight: 500; }
+  .b-pending  { background: #FFF3D6; color: #C99A1E; }
+  .b-accepted { background: #E4F6EA; color: #2FA65A; }
+  .b-done     { background: #EFE7FF; color: #7B5BD6; }
+  .b-rejected { background: #F0F0F0; color: #999; }
+
+  .creator-tag {
+    font-size: 11px; background: #F5F5F5; color: #888;
+    padding: 2px 6px; border-radius: 4px; margin-left: 6px; font-weight: normal;
+  }
+
+  /* ===== 表单 ===== */
+  .field { margin-bottom: 16px; }
+  .field > label { display: block; font-size: 13px; color: #7d6b72; margin-bottom: 8px; font-weight: 500; }
+  input[type=text], textarea, select, input[type=date] {
+    width: 100%; border: 1.5px solid #FFE0E9; border-radius: 12px;
+    padding: 12px 14px; font-size: 14.5px; font-family: inherit;
+    background: #FFFCFD; color: #3a2c31; outline: none;
+    -webkit-appearance: none; appearance: none; min-height: 46px;
+  }
+  select {
+    background-image: linear-gradient(45deg, transparent 50%, #FF9CB5 50%), linear-gradient(135deg, #FF9CB5 50%, transparent 50%);
+    background-position: calc(100% - 20px) calc(50% + 1px), calc(100% - 14px) calc(50% + 1px);
+    background-size: 6px 6px, 6px 6px; background-repeat: no-repeat; padding-right: 38px;
+  }
+  input:focus, textarea:focus, select:focus { border-color: #FF9CB5; }
+  textarea { resize: none; height: 90px; line-height: 1.5; }
+  .row { display: flex; gap: 10px; } .row > * { flex: 1; }
+
+  /* ===== 底部导航 ===== */
+  .tabbar {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 480px; background: rgba(255,255,255,.97);
+    backdrop-filter: blur(10px); border-top: 1px solid #FFE8EF;
+    display: flex; padding: 8px 0 12px; z-index: 60;
+  }
+  .tabbar .tab { flex: 1; text-align: center; font-size: 11px; color: #b9a4ab; cursor: pointer; padding: 4px 0; }
+  .tabbar .tab .ic { font-size: 20px; display: block; margin-bottom: 2px; filter: grayscale(1); opacity: .5; }
+  .tabbar .tab.on { color: #FF6B8A; font-weight: 600; }
+  .tabbar .tab.on .ic { filter: none; opacity: 1; }
+
+  /* ===== 日历组件 ===== */
+  .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-weight: 600; color: #FF6B8A; font-size: 15px; }
+  .cal-header span { padding: 4px 10px; cursor: pointer; }
+  .cal-week { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 11px; color: #b9a4ab; margin-bottom: 8px; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
+  .cal-cell {
+    aspect-ratio: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;
+    border-radius: 8px; font-size: 13px; position: relative; color: #333;
+  }
+  .cal-cell.empty { color: transparent; }
+  .cal-cell.today { border: 1.5px solid #FF6B8A; color: #FF6B8A; font-weight: 600; }
+  .cal-cell.marked { background: #FFF0F4; color: #FF6B8A; font-weight: 600; }
+  .cal-cell .dot { width: 4px; height: 4px; background: #FF6B8A; border-radius: 50%; position: absolute; bottom: 4px; }
+  .cal-cell .festival-tag {
+    position: absolute; bottom: 1px; font-size: 8px; color: #E84A6F;
+    transform: scale(.8); white-space: nowrap;
+  }
+
+  /* ===== 时间线 ===== */
+  .tl-item { position: relative; padding-left: 22px; margin-bottom: 18px; }
+  .tl-item::before {
+    content: ''; position: absolute; left: 4px; top: 8px;
+    width: 9px; height: 9px; border-radius: 50%; background: #FF6B8A; box-shadow: 0 0 0 4px #FFE8EF;
+  }
+  .tl-item::after { content: ''; position: absolute; left: 8px; top: 22px; width: 1.5px; height: calc(100% - 8px); background: #FFE0E9; }
+  .tl-item:last-child::after { display: none; }
+  .tl-item.rejected::before { background: #ccc; box-shadow: 0 0 0 4px #f0f0f0; }
+  .tl-date { font-size: 11.5px; color: #FF6B8A; font-weight: 600; margin-bottom: 6px; }
+
+  .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+  .photo-grid img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 10px; cursor: pointer; }
+  .note { margin-top: 10px; font-size: 13.5px; line-height: 1.65; color: #6b5a60; background: #FFF9FB; border-radius: 10px; padding: 12px; border-left: 3px solid #FFD6E2; }
+  .reject-box { margin-top: 10px; font-size: 13px; color: #888; background: #FAFAFA; border-radius: 10px; padding: 12px; border-left: 3px solid #ddd; }
+
+  /* ===== 特殊卡片 ===== */
+  .stat-row { display: flex; text-align: center; }
+  .stat-item { flex: 1; } .stat-item b { font-size: 24px; color: #FF6B8A; display: block; }
+  .stat-item span { font-size: 12px; color: #a898a0; }
+
+  .love-card {
+    background: linear-gradient(135deg, #FF9CB5, #FF7A97);
+    border: none; text-align: center; color: #fff;
+    box-shadow: 0 8px 24px rgba(255, 122, 151, .3);
+  }
+  .love-days { font-size: 46px; font-weight: 700; line-height: 1.1; }
+  .love-label { font-size: 12.5px; opacity: .92; margin-top: 4px; }
+  .love-since { font-size: 12px; opacity: .85; margin-top: 10px; }
+
+  .bday-banner {
+    background: linear-gradient(135deg, #FFF6E0, #FFE4B5);
+    border: 1px solid #FFD700; border-radius: 14px; padding: 12px 16px;
+    margin-bottom: 14px; font-size: 13px; color: #B8860B; display: flex; align-items: center; gap: 8px;
+  }
+
+  .dish-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
+  .dish-item:last-child { border-bottom: none; }
+
+  /* 弹层与 Toast */
+  .mask { position: fixed; inset: 0; background: rgba(60,40,50,.4); z-index: 100; display: none; }
+  .mask.show { display: block; animation: fade .2s; }
+  .sheet {
+    position: fixed; left: 50%; bottom: 0; transform: translate(-50%, 100%);
+    width: 100%; max-width: 480px; background: #fff; border-radius: 22px 22px 0 0; z-index: 101;
+    padding: 20px 18px 30px; max-height: 88vh; overflow-y: auto; transition: transform .3s cubic-bezier(.32,.72,0,1);
+  }
+  .sheet.show { transform: translate(-50%, 0); }
+  .sheet-title { font-size: 17px; font-weight: 600; margin-bottom: 18px; text-align: center; }
+  .sheet-close { position: absolute; right: 16px; top: 14px; font-size: 22px; color: #c4b3ba; cursor: pointer; }
+  .upload-box { aspect-ratio: 1; border: 1.5px dashed #FFD6E2; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 26px; color: #FFB6C8; cursor: pointer; }
+
+  .toast { position: fixed; left: 50%; top: 50%; transform: translate(-50%,-50%); background: rgba(50,35,42,.88); color: #fff; padding: 12px 22px; border-radius: 12px; font-size: 13.5px; z-index: 999; opacity: 0; pointer-events: none; transition: opacity .22s; max-width: 80%; text-align: center; }
+  .toast.show { opacity: 1; }
+  
+  .avatar-dot { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg,#FFD3DF,#FFA8BE); display: inline-flex; align-items: center; justify-content: center; font-size: 17px; color: #fff; font-weight: 600; flex-shrink: 0; }
+  
+  /* 顶部提醒条 */
+  .tip-bar {
+    background: #FFF6E0; color: #B98700; font-size: 11.5px;
+    padding: 8px 16px; text-align: center; line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <h1>💕 我们的约定</h1>
+  <div class="who" onclick="switchIdentity()" id="navWho">我 ▾</div>
+</div>
+
+<div class="tip-bar" id="tipBar">💡 微信内打开可能无法选照片，请点右上角“在浏览器中打开”</div>
+
+<div class="page active" id="page-home"><div id="homeContent"></div></div>
+
+<div class="page" id="page-create">
+  <div class="card">
+    <div class="section-title">✨ 发起一个新约定</div>
+    <div class="field">
+      <label>要做什么？</label>
+      <input type="text" id="inpTitle" placeholder="例如：周末去看海 / 一起看电影">
+    </div>
+    <div class="row">
+      <div class="field"><label>日期</label><select id="inpDate"></select></div>
+      <div class="field"><label>时间</label><select id="inpTime"></select></div>
+    </div>
+    <div class="field">
+      <label>地点（可选）</label>
+      <input type="text" id="inpPlace" placeholder="例如：外滩 / 电影院">
+    </div>
+    <div class="field">
+      <label>备注（可选）</label>
+      <textarea id="inpDesc" placeholder="想对 TA 说的话…"></textarea>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="submitPlan()">发送邀请给 TA 💌</button>
+  </div>
+</div>
+
+<div class="page" id="page-food"><div id="foodContent"></div></div>
+<div class="page" id="page-record"><div id="recordContent"></div></div>
+<div class="page" id="page-mine"><div id="mineContent"></div></div>
+
+<div class="mask" id="mask" onclick="closeSheet()"></div>
+<div class="sheet" id="sheet">
+  <span class="sheet-close" onclick="closeSheet()">×</span>
+  <div id="sheetBody"></div>
+</div>
+
+<div class="tabbar">
+  <div class="tab on" data-tab="home" onclick="switchTab('home')"><span class="ic">🏠</span>约定</div>
+  <div class="tab" data-tab="create" onclick="switchTab('create')"><span class="ic">➕</span>发起</div>
+  <div class="tab" data-tab="food" onclick="switchTab('food')"><span class="ic">🍳</span>美食</div>
+  <div class="tab" data-tab="record" onclick="switchTab('record')"><span class="ic">📸</span>回忆</div>
+  <div class="tab" data-tab="mine" onclick="switchTab('mine')"><span class="ic">👤</span>我的</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   全局配置与数据层
+   ========================================================= */
+const FESTIVALS = {
+  '01-01': '元旦', '02-14': '情人节', '03-14': '白色情人节',
+  '05-01': '劳动节', '05-20': '520', '06-01': '儿童节',
+  '08-25': '七夕(暂定)', '10-01': '国庆节', '10-31': '万圣夜',
+  '12-24': '平安夜', '12-25': '圣诞节'
+};
+
+const DB = {
+  PKEY: 'couple_plans_final',
+  MKEY: 'couple_memories_final',
+  UKEY: 'couple_users_final',
+  CKEY: 'couple_current_id',
+
+  load() { try { return JSON.parse(localStorage.getItem(this.PKEY) || '[]'); } catch(e) { return []; } },
+  save(list) { localStorage.setItem(this.PKEY, JSON.stringify(list)); },
+  add(plan) {
+    const list = this.load();
+    plan.id = 'p' + Date.now() + Math.random().toString(36).slice(2, 6);
+    list.push(plan); this.save(list); return plan;
+  },
+  update(id, patch) {
+    const list = this.load();
+    const i = list.findIndex(p => p.id === id);
+    if (i > -1) { list[i] = Object.assign(list[i], patch); this.save(list); }
+    return list[i];
+  },
+  find(id) { return this.load().find(p => p.id === id); },
+
+  loadMemories() { try { return JSON.parse(localStorage.getItem(this.MKEY) || '[]'); } catch(e) { return []; } },
+  saveMemories(list) { localStorage.setItem(this.MKEY, JSON.stringify(list)); }
+};
+
+function getCurrentUser() {
+  const users = JSON.parse(localStorage.getItem(DB.UKEY) || '{}');
+  const currentId = localStorage.getItem(DB.CKEY) || 'me_001';
+  return users[currentId] || {};
+}
+function getPartner() {
+  const users = JSON.parse(localStorage.getItem(DB.UKEY) || '{}');
+  const me = getCurrentUser();
+  if (me.boundPartner) return users[me.boundPartner] || null;
+  return null;
+}
+function saveCurrentUser(userData) {
+  const users = JSON.parse(localStorage.getItem(DB.UKEY) || '{}');
+  const currentId = localStorage.getItem(DB.CKEY) || 'me_001';
+  users[currentId] = userData;
+  try {
+    localStorage.setItem(DB.UKEY, JSON.stringify(users));
+  } catch(e) {
+    toast('存储空间不足，请清理一些旧照片');
+  }
+}
+
+function switchIdentity() {
+  const currentId = localStorage.getItem(DB.CKEY) || 'me_001';
+  const nextId = currentId === 'me_001' ? 'partner_001' : 'me_001';
+  localStorage.setItem(DB.CKEY, nextId);
+  toast(`已切换为：${nextId === 'me_001' ? '我' : 'TA'}`, 1500);
+  initUser(); switchTab('home');
+}
+
+/* =========================================================
+   工具
+   ========================================================= */
+function pad(n) { return n < 10 ? '0' + n : '' + n; }
+function fmtDT(ts) {
+  if (!ts) return ''; const d = new Date(ts);
+  return `${d.getMonth() + 1}月${d.getDate()}日 ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+function toast(msg, ms = 1900) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('show'), ms);
+}
+function esc(s) { return String(s || '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
+
+function daysTogether(dateStr) {
+  if (!dateStr) return 0;
+  const s = new Date(String(dateStr).replace(/-/g, '/'));
+  if (isNaN(s.getTime())) return 0;
+  const t0 = new Date(s.getFullYear(), s.getMonth(), s.getDate()).getTime();
+  const today = new Date();
+  const t1 = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+  return Math.floor((t1 - t0) / 86400000) + 1;
+}
+function getTogetherDays() {
+  const me = getCurrentUser();
+  if (!me.boundPartner || !me.togetherDate) return 0;
+  return daysTogether(me.togetherDate);
+}
+
+function getDaysToBirthday(mmdd) {
+  if (!mmdd) return null;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const [m, d] = mmdd.split('-').map(Number);
+  let next = new Date(today.getFullYear(), m - 1, d);
+  if (next < today) next = new Date(today.getFullYear() + 1, m - 1, d);
+  return Math.ceil((next - today) / 86400000);
+}
+
+function dateOptionsHTML(from, to, sel) {
+  const today = new Date(); const weeks = '日一二三四五六'; let h = '';
+  for (let i = from; i <= to; i++) {
+    const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
+    const v = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    let l = `${d.getMonth() + 1}月${d.getDate()}日 周${weeks[d.getDay()]}`;
+    if (i === 0) l = '今天 · ' + l; else if (i === 1) l = '明天 · ' + l;
+    h += `<option value="${v}" ${v === sel ? 'selected' : ''}>${l}</option>`;
+  }
+  return h;
+}
+function timeOptionsHTML(sel) {
+  let h = '';
+  for (let i = 0; i < 24; i++) { const v = pad(i) + ':00'; h += `<option value="${v}" ${v === sel ? 'selected' : ''}>${v}</option>`; }
+  return h;
+}
+function defaultDateStr(offset) {
+  const d = new Date(); const t = new Date(d.getFullYear(), d.getMonth(), d.getDate() + (offset || 0));
+  return `${t.getFullYear()}-${pad(t.getMonth() + 1)}-${pad(t.getDate())}`;
+}
+function toTimestamp(dateVal, timeVal) { return new Date(`${dateVal.replace(/-/g, '/')} ${timeVal}:00`).getTime(); }
+
+// 网页版特供：极高强度压缩，尽可能多存几张照片
+function compressImage(file, maxSize = 800, quality = 0.6) {
+  return new Promise(resolve => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        let { width, height } = img;
+        if (width > maxSize || height > maxSize) {
+          if (width >= height) { height = Math.round(height * maxSize / width); width = maxSize; }
+          else { width = Math.round(width * maxSize / height); height = maxSize; }
+        }
+        const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height;
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = () => resolve(null); img.src = e.target.result;
+    };
+    reader.onerror = () => resolve(null); reader.readAsDataURL(file);
+  });
+}
+
+/* =========================================================
+   路由
+   ========================================================= */
+let currentTab = 'home';
+let calYear, calMonth;
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + tab).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.dataset.tab === tab));
+  render(tab); window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function render(tab) {
+  if (tab === 'home') renderHome();
+  if (tab === 'create') initCreateForm();
+  if (tab === 'food') renderFood();
+  if (tab === 'record') { 
+    if (!calYear) { const d = new Date(); calYear = d.getFullYear(); calMonth = d.getMonth(); }
+    renderRecord(); 
+  }
+  if (tab === 'mine') renderMine();
+}
+
+/* =========================================================
+   首页
+   ========================================================= */
+function renderHome() {
+  const me = getCurrentUser();
+  const partner = getPartner();
+  const plans = DB.load();
+  const incoming = [], outgoing = [], upcoming = [], finished = [];
+
+  plans.forEach(p => {
+    if (p.status === 'pending') {
+      p.creator === me.openid ? outgoing.push(p) : incoming.push(p);
+    } else if (p.status === 'accepted') upcoming.push(p);
+    else if (p.status === 'done') finished.push(p);
+  });
+
+  upcoming.sort((a, b) => a.startTime - b.startTime);
+  finished.sort((a, b) => b.recordTime - a.recordTime);
+
+  let html = '';
+
+  let bdayMsgs = [];
+  if (me.birthday) {
+    const d = getDaysToBirthday(me.birthday);
+    if (d === 0) bdayMsgs.push('<b>今天是你生日</b>，生日快乐！🎂');
+    else if (d <= 15) bdayMsgs.push(`距离<b>你的生日</b>还有 <b>${d}</b> 天`);
+  }
+  if (partner && partner.birthday) {
+    const d = getDaysToBirthday(partner.birthday);
+    if (d === 0) bdayMsgs.push(`今天是 <b>TA 的生日</b>，记得送上祝福哦！🎁`);
+    else if (d <= 15) bdayMsgs.push(`距离<b>TA 的生日</b>还有 <b>${d}</b> 天`);
+  }
+  if (bdayMsgs.length) {
+    html += `<div class="bday-banner">🎉 ${bdayMsgs.join('<br>')}</div>`;
+  }
+
+  const days = getTogetherDays();
+  if (days > 0) {
+    html += `
+      <div class="card" style="display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#FFF0F4,#FFE8EF);border:none;">
+        <div class="avatar-dot">💕</div>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:600;">和 ${esc(partner.nickname)} 在一起的第 <span style="color:#FF6B8A;font-size:18px;">${days}</span> 天</div>
+          <div style="font-size:12px;color:#b0929e;margin-top:3px;">从 ${esc(me.togetherDate)} 开始的故事</div>
+        </div>
+      </div>`;
+  }
+
+  if (!me.boundPartner) {
+    html += `<div class="card empty"><span class="big">👤</span>先去「我的」页面绑定 TA 吧<br><span style="font-size:11px; color:#ccc;">（网页版数据独立，各自绑定即可体验）</span></div>`;
+  } else {
+    if (!plans.length) {
+      html += `<div class="card empty"><span class="big">💌</span>还没有任何约定<br>点底部「发起」或「美食」约 TA 吧</div>`;
+    }
+    if (incoming.length) {
+      html += `<div class="section-title">💌 TA 邀请你</div>`;
+      incoming.forEach(p => html += cardHTML(p, 'incoming'));
+    }
+    if (upcoming.length) {
+      html += `<div class="section-title">📅 即将到来</div>`;
+      upcoming.forEach(p => html += cardHTML(p, 'upcoming'));
+    }
+    if (outgoing.length) {
+      html += `<div class="section-title">⏳ 等待 TA 回应</div>`;
+      outgoing.forEach(p => html += cardHTML(p, 'outgoing'));
+    }
+    if (finished.length) {
+      html += `<div class="section-title">💫 最近的回忆</div>`;
+      finished.slice(0, 3).forEach(p => html += cardHTML(p, 'done'));
+    }
+  }
+
+  document.getElementById('homeContent').innerHTML = html;
+}
+
+function cardHTML(p, type) {
+  const badge = { pending: '<span class="badge b-pending">待回应</span>', accepted: '<span class="badge b-accepted">已约定</span>', done: '<span class="badge b-done">已完成</span>' }[p.status] || '';
+  const creatorName = p.creator === 'me_001' ? '我' : 'TA';
+  const isDish = p.type === 'dish';
+  const titleIcon = isDish ? '🍳 ' : '';
+  
+  let actions = '';
+  if (type === 'incoming') {
+    actions = `<div class="actions">
+      <button class="btn btn-gray" onclick="event.stopPropagation();rejectPlan('${p.id}')">婉拒</button>
+      <button class="btn btn-primary" onclick="event.stopPropagation();acceptPlan('${p.id}')">欣然接受</button>
+    </div>`;
+  } else if (type === 'upcoming') {
+    actions = `<div class="actions"><button class="btn btn-primary" onclick="event.stopPropagation();openComplete('${p.id}')">完成打卡 📸</button></div>`;
+  } else if (type === 'done') {
+    actions = `<div class="actions"><button class="btn btn-ghost" onclick="event.stopPropagation();openDetail('${p.id}')">查看回忆</button></div>`;
+  } else if (type === 'outgoing') {
+    actions = `<div class="actions"><button class="btn btn-gray" onclick="event.stopPropagation();cancelPlan('${p.id}')">取消邀请</button></div>`;
+  }
+
+  return `
+    <div class="card ${type === 'incoming' ? 'invite' : ''}" onclick="openDetail('${p.id}')">
+      <div class="plan-title">
+        <span>${titleIcon}${esc(p.title)} <span class="creator-tag">${creatorName}发起</span></span>
+        ${badge}
+      </div>
+      <div class="meta">🕐 ${fmtDT(p.startTime)}</div>
+      ${p.place ? `<div class="meta">📍 ${esc(p.place)}</div>` : ''}
+      ${actions}
+    </div>`;
+}
+
+/* =========================================================
+   发起普通约定
+   ========================================================= */
+function initCreateForm() {
+  const dSel = document.getElementById('inpDate'); const tSel = document.getElementById('inpTime');
+  dSel.innerHTML = dateOptionsHTML(0, 90, dSel.value || defaultDateStr(1));
+  tSel.innerHTML = timeOptionsHTML(tSel.value || '19:00');
+}
+function submitPlan() {
+  const title = document.getElementById('inpTitle').value.trim();
+  const dateVal = document.getElementById('inpDate').value;
+  const timeVal = document.getElementById('inpTime').value;
+  const place = document.getElementById('inpPlace').value.trim();
+  if (!title) return toast('写点想做的事吧～');
+  const startTime = toTimestamp(dateVal, timeVal);
+  if (startTime < Date.now()) return toast('时间已经过去啦');
+  
+  const me = getCurrentUser();
+  DB.add({ creator: me.openid, title, place, startTime, status: 'pending', reminderSent: false, record: null });
+  document.getElementById('inpTitle').value = ''; document.getElementById('inpPlace').value = '';
+  toast('邀请已发送 💌'); switchTab('home');
+}
+
+/* =========================================================
+   居家美食模块
+   ========================================================= */
+function renderFood() {
+  const me = getCurrentUser();
+  const partner = getPartner();
+  let html = '';
+
+  html += `
+    <div class="card">
+      <div class="section-title">👨‍🍳 我的拿手菜</div>
+      <div>
+        ${me.dishes && me.dishes.length ? me.dishes.map((dish, i) => `
+          <div class="dish-item">
+            <span>${esc(dish)}</span>
+            <span style="color:#FF6B8A; cursor:pointer; padding:4px;" onclick="delDish(${i})">删除</span>
+          </div>
+        `).join('') : '<div class="empty" style="padding:10px 0;">还没有添加拿手菜</div>'}
+      </div>
+      <div style="display:flex; gap:10px; margin-top:15px;">
+        <input type="text" id="newDish" placeholder="输入菜名，如：红烧肉" style="flex:1;">
+        <button class="btn btn-primary" style="padding:0 20px;" onclick="addDish()">添加</button>
+      </div>
+    </div>
+  `;
+
+  if (partner) {
+    html += `
+      <div class="card">
+        <div class="section-title">🍽️ TA 的拿手菜（点击点菜）</div>
+        <div>
+          ${partner.dishes && partner.dishes.length ? partner.dishes.map(dish => `
+            <div class="dish-item">
+              <span>${esc(dish)}</span>
+              <button class="btn btn-primary" style="padding:6px 16px; font-size:12px;" onclick="openOrderDish('${esc(dish)}')">点这道菜</button>
+            </div>
+          `).join('') : '<div class="empty" style="padding:10px 0;">TA 还没有添加拿手菜</div>'}
+        </div>
+      </div>
+    `;
+  } else {
+    html += `<div class="card empty">绑定 TA 后可以互相点菜哦~</div>`;
+  }
+
+  document.getElementById('foodContent').innerHTML = html;
+}
+
+function addDish() {
+  const input = document.getElementById('newDish');
+  const val = input.value.trim();
+  if (!val) return toast('输入菜名呀~');
+  
+  const me = getCurrentUser();
+  me.dishes = me.dishes || [];
+  if (me.dishes.includes(val)) return toast('已经有这道菜了');
+  
+  me.dishes.push(val);
+  saveCurrentUser(me);
+  input.value = '';
+  renderFood();
+}
+
+function delDish(index) {
+  const me = getCurrentUser();
+  me.dishes.splice(index, 1);
+  saveCurrentUser(me);
+  renderFood();
+}
+
+function openOrderDish(dishName) {
+  const now = new Date();
+  showSheet(`
+    <div class="sheet-title">点菜：${esc(dishName)}</div>
+    <div class="row">
+      <div class="field"><label>期望日期</label><select id="ordDate">${dateOptionsHTML(0, 30, defaultDateStr(0))}</select></div>
+      <div class="field"><label>时间</label><select id="ordTime">${timeOptionsHTML('18:00')}</select></div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="submitOrder('${esc(dishName)}')">发送点菜请求</button>
+  `);
+}
+
+function submitOrder(dishName) {
+  const dateVal = document.getElementById('ordDate').value;
+  const timeVal = document.getElementById('ordTime').value;
+  const startTime = toTimestamp(dateVal, timeVal);
+  const me = getCurrentUser();
+  
+  DB.add({
+    creator: me.openid,
+    title: '美食：' + dishName,
+    type: 'dish',
+    desc: '想吃你做的' + dishName,
+    startTime: startTime,
+    status: 'pending',
+    reminderSent: false,
+    record: null
+  });
+  
+  closeSheet();
+  toast('点菜请求已发送 💌');
+  switchTab('home');
+}
+
+/* =========================================================
+   接受 & 婉拒 & 打卡
+   ========================================================= */
+function acceptPlan(id) {
+  DB.update(id, { status: 'accepted', acceptedAt: Date.now() });
+  toast('已接受，将在开始前 2 小时提醒 ⏰'); renderHome();
+}
+function rejectPlan(id) {
+  const reason = prompt('请填写婉拒理由（选填）：', '那天有其他安排啦~');
+  if (reason === null) return;
+  DB.update(id, { status: 'rejected', rejectReason: reason || '未填写理由', rejectTime: Date.now() });
+  toast('已婉拒'); renderHome();
+}
+function cancelPlan(id) {
+  if (!confirm('确定取消吗？')) return;
+  DB.update(id, { status: 'cancelled' }); toast('已取消'); renderHome();
+}
+
+/* =========================================================
+   详情与打卡
+   ========================================================= */
+let sheetPlanId = null; let draftPhotos = [];
+function openDetail(id) {
+  const p = DB.find(id); if (!p) return;
+  let body = `<div class="sheet-title">${esc(p.title)}</div>
+    <div class="meta">🕐 约定时间：${fmtDT(p.startTime)}</div>
+    ${p.place ? `<div class="meta">📍 地点：${esc(p.place)}</div>` : ''}`;
+  
+  if (p.status === 'done' && p.record) {
+    body += `<div class="section-title" style="margin-top:20px">💫 回忆留痕</div>
+      <div class="meta">🕐 实际时间：${fmtDT(p.record.time)}</div>
+      ${p.record.note ? `<div class="note">${esc(p.record.note)}</div>` : ''}
+      ${(p.record.photos && p.record.photos.length) ? `<div class="photo-grid">${p.record.photos.map(src => `<img src="${src}" onclick="viewPhoto(this.src)">`).join('')}</div>` : ''}`;
+  } else if (p.status === 'accepted') {
+    body += `<button class="btn btn-primary btn-block" style="margin-top:20px" onclick="openComplete('${p.id}')">完成打卡 📸</button>`;
+  } else if (p.status === 'rejected') {
+    body += `<div class="reject-box" style="margin-top:20px"><b>婉拒理由：</b><br>${esc(p.rejectReason)}</div>`;
+  }
+  showSheet(body);
+}
+
+function showSheet(html) {
+  document.getElementById('sheetBody').innerHTML = html;
+  document.getElementById('mask').classList.add('show');
+  document.getElementById('sheet').classList.add('show');
+  document.getElementById('sheet').scrollTop = 0;
+}
+function closeSheet() {
+  document.getElementById('mask').classList.remove('show');
+  document.getElementById('sheet').classList.remove('show');
+}
+function viewPhoto(src) { const w = window.open(); if (w) w.document.write(`<img src="${src}" style="max-width:100%">`); }
+
+function openComplete(id) {
+  const p = DB.find(id); if (!p) return;
+  sheetPlanId = id; draftPhotos = []; const now = new Date();
+  showSheet(`
+    <div class="sheet-title">记录这次回忆 💫</div>
+    <div class="row">
+      <div class="field"><label>日期</label><select id="recDate">${dateOptionsHTML(-7, 0, defaultDateStr(0))}</select></div>
+      <div class="field"><label>时间（整点）</label><select id="recTime">${timeOptionsHTML(pad(now.getHours()) + ':00')}</select></div>
+    </div>
+    <div class="field"><label>地点</label><input type="text" id="recPlace" value="${esc(p.place || '')}" placeholder="去了哪里？"></div>
+    <div class="field"><label>照片</label><div class="photo-grid" id="photoGrid"></div></div>
+    <div class="field"><label>心得体会</label><textarea id="recNote" placeholder="今天最开心的一刻是…" maxlength="500"></textarea></div>
+    <button class="btn btn-primary btn-block" onclick="submitRecord()">保存回忆</button>
+  `);
+  renderPhotoGrid();
+}
+function submitRecord() {
+  const dateVal = document.getElementById('recDate').value; const timeVal = document.getElementById('recTime').value;
+  const ts = toTimestamp(dateVal, timeVal);
+  const success = DB.update(sheetPlanId, {
+    status: 'done', record: { time: ts, place: document.getElementById('recPlace').value.trim(), note: document.getElementById('recNote').value.trim(), photos: draftPhotos.slice() },
+    recordTime: ts
+  });
+  if(success) {
+    closeSheet(); toast('已存入回忆 💫'); render(currentTab);
+  }
+}
+function renderPhotoGrid() {
+  const grid = document.getElementById('photoGrid'); if (!grid) return;
+  grid.innerHTML = draftPhotos.map((src, i) => `
+      <div style="position:relative"><img src="${src}" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;">
+      <span onclick="delPhoto(${i})" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:#FF6B8A;color:#fff;font-size:13px;line-height:20px;text-align:center;cursor:pointer;">×</span></div>`).join('') +
+    (draftPhotos.length < 9 ? `<label class="upload-box">+<input type="file" accept="image/*" multiple style="display:none" onchange="addPhotos(event)"></label>` : '');
+}
+async function addPhotos(e) {
+  const files = Array.from(e.target.files || []); const left = 9 - draftPhotos.length;
+  const picked = files.slice(0, left); e.target.value = '';
+  if (!picked.length) return; toast('图片压缩中…', 800);
+  for (const f of picked) { const data = await compressImage(f); if (data) draftPhotos.push(data); }
+  renderPhotoGrid();
+}
+function delPhoto(i) { draftPhotos.splice(i, 1); renderPhotoGrid(); }
+
+/* =========================================================
+   随手记
+   ========================================================= */
+function openMemory() {
+  draftPhotos = []; const now = new Date();
+  showSheet(`
+    <div class="sheet-title">记录此刻 💭</div>
+    <div class="row">
+      <div class="field"><label>日期</label><select id="memDate">${dateOptionsHTML(-60, 0, defaultDateStr(0))}</select></div>
+      <div class="field"><label>时间</label><select id="memTime">${timeOptionsHTML(pad(now.getHours()) + ':00')}</select></div>
+    </div>
+    <div class="field"><label>照片</label><div class="photo-grid" id="photoGrid"></div></div>
+    <div class="field"><label>当时的心境</label><input type="text" id="memMood" placeholder="开心 / 有点想你…" maxlength="20"></div>
+    <div class="field"><label>想法 & 碎碎念</label><textarea id="memNote" placeholder="今天路过那家店，突然想起你…" maxlength="500"></textarea></div>
+    <button class="btn btn-primary btn-block" onclick="submitMemory()">保存这一刻</button>
+  `);
+  renderPhotoGrid();
+}
+function submitMemory() {
+  const dateVal = document.getElementById('memDate').value; const timeVal = document.getElementById('memTime').value;
+  const ts = toTimestamp(dateVal, timeVal);
+  const list = DB.loadMemories();
+  list.push({ id: 'm' + Date.now(), time: ts, photos: draftPhotos.slice(), mood: document.getElementById('memMood').value.trim(), note: document.getElementById('memNote').value.trim() });
+  try {
+    DB.saveMemories(list); closeSheet(); toast('已记录 💫'); render('record');
+  } catch(e) {
+    toast('存储空间不足，请清理数据');
+  }
+}
+
+/* =========================================================
+   回忆页 & 日历
+   ========================================================= */
+function changeMonth(dir) {
+  calMonth += dir;
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  renderRecord();
+}
+
+function renderRecord() {
+  const me = getCurrentUser();
+  const partner = getPartner();
+  const plans = DB.load();
+  const donePlans = plans.filter(p => p.status === 'done' && p.record);
+  const rejectedPlans = plans.filter(p => p.status === 'rejected');
+  const memories = DB.loadMemories();
+
+  const markedDates = new Set();
+  donePlans.forEach(p => { const d = new Date(p.record.time); markedDates.add(`${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`); });
+  memories.forEach(m => { const d = new Date(m.time); markedDates.add(`${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`); });
+
+  const today = new Date(); const todayStr = `${today.getFullYear()}-${pad(today.getMonth()+1)}-${pad(today.getDate())}`;
+  const firstDay = new Date(calYear, calMonth, 1);
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const startWeekday = firstDay.getDay();
+
+  let calHTML = `<div class="card" style="padding:16px 12px">
+    <div class="cal-header">
+      <span onclick="changeMonth(-1)">‹</span>
+      <span>${calYear}年${calMonth + 1}月</span>
+      <span onclick="changeMonth(1)">›</span>
+    </div>
+    <div class="cal-week"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div>
+    <div class="cal-grid">`;
+
+  for (let i = 0; i < startWeekday; i++) calHTML += `<div class="cal-cell empty"></div>`;
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${calYear}-${pad(calMonth + 1)}-${pad(d)}`;
+    const mmdd = `${pad(calMonth + 1)}-${pad(d)}`;
+    const isToday = dateStr === todayStr;
+    const isMarked = markedDates.has(dateStr);
+    
+    let festival = FESTIVALS[mmdd] || '';
+    if (me.birthday === mmdd) festival = '我的生日';
+    if (partner && partner.birthday === mmdd) festival = 'TA生日';
+
+    let cls = 'cal-cell';
+    if (isToday) cls += ' today';
+    if (isMarked) cls += ' marked';
+
+    calHTML += `<div class="${cls}">
+      ${d}
+      ${isMarked ? '<span class="dot"></span>' : ''}
+      ${festival ? `<span class="festival-tag">${festival.slice(0, 4)}</span>` : ''}
+    </div>`;
+  }
+  calHTML += `</div></div>`;
+
+  const entries = [];
+  donePlans.forEach(p => entries.push({ kind: 'plan', time: p.record.time || p.startTime, title: p.title, place: p.record.place || p.place || '', note: p.record.note || '', photos: p.record.photos || [], creator: p.creator, type: p.type }));
+  rejectedPlans.forEach(p => entries.push({ kind: 'rejected', time: p.rejectTime || p.startTime, title: p.title, rejectReason: p.rejectReason, creator: p.creator }));
+  memories.forEach(m => entries.push({ kind: 'memory', time: m.time || m.createdAt, mood: m.mood || '', note: m.note || '', photos: m.photos || [] }));
+
+  entries.sort((a, b) => b.time - a.time);
+
+  let timelineHTML = '';
+  if (!entries.length) timelineHTML = `<div class="card empty"><span class="big">📸</span>还没有留下回忆</div>`;
+  
+  entries.forEach(e => {
+    const isMemory = e.kind === 'memory';
+    const isRejected = e.kind === 'rejected';
+    const dateStr = fmtDT(e.time);
+    
+    let creatorTag = '';
+    if (!isMemory) creatorTag = `<span class="creator-tag">${e.creator === 'me_001' ? '我' : 'TA'}发起</span>`;
+    let titleIcon = e.type === 'dish' ? '🍳 ' : '';
+
+    let inner = '';
+    if (isRejected) {
+      inner = `<div class="plan-title" style="color:#999">${esc(e.title)} ${creatorTag} <span class="badge b-rejected">已婉拒</span></div>
+        <div class="reject-box"><b>婉拒理由：</b> ${esc(e.rejectReason)}</div>`;
+    } else if (isMemory) {
+      inner = `<div class="plan-title">💭 随手记 ${e.mood ? `<span class="mood-tag" style="background:#FFF0F4;color:#FF6B8A;padding:2px 6px;border-radius:4px;font-size:11px;margin-left:6px;">${esc(e.mood)}</span>` : ''}</div>
+        ${e.note ? `<div class="note">${esc(e.note)}</div>` : ''}
+        ${e.photos.length ? `<div class="photo-grid">${e.photos.map(src => `<img src="${src}" onclick="viewPhoto(this.src)">`).join('')}</div>` : ''}`;
+    } else {
+      inner = `<div class="plan-title">${titleIcon}${esc(e.title)} ${creatorTag}</div>
+        ${e.place ? `<div class="meta">📍 ${esc(e.place)}</div>` : ''}
+        ${e.note ? `<div class="note">${esc(e.note)}</div>` : ''}
+        ${e.photos.length ? `<div class="photo-grid">${e.photos.map(src => `<img src="${src}" onclick="viewPhoto(this.src)">`).join('')}</div>` : ''}`;
+    }
+
+    timelineHTML += `
+      <div class="tl-item ${isRejected ? 'rejected' : ''}">
+        <div class="tl-date">${dateStr}</div>
+        <div class="card" style="margin-bottom:0; ${isRejected ? 'background:#fafafa;' : ''}">${inner}</div>
+      </div>`;
+  });
+
+  const photoCount = entries.reduce((s, e) => s + (e.photos ? e.photos.length : 0), 0);
+  const days = getTogetherDays();
+  
+  document.getElementById('recordContent').innerHTML = `
+    <div class="card">
+      <div class="stat-row">
+        <div class="stat-item"><b>${donePlans.length + memories.length}</b><span>甜蜜回忆</span></div>
+        <div class="stat-item"><b>${photoCount}</b><span>张照片</span></div>
+        <div class="stat-item"><b>${days || '—'}</b><span>在一起天数</span></div>
+      </div>
+    </div>
+    ${calHTML}
+    <button class="btn btn-primary btn-block" style="margin-bottom:18px" onclick="openMemory()">📷 记录此刻（无需约定）</button>
+    <div class="section-title" style="margin-left:8px;">🕒 回忆时间线</div>
+    ${timelineHTML}
+  `;
+}
+
+/* =========================================================
+   我的页面（绑定、解绑、修改信息）
+   ========================================================= */
+function renderMine() {
+  const me = getCurrentUser();
+  const partner = getPartner();
+  const bound = !!me.boundPartner;
+  const days = getTogetherDays();
+
+  let html = `
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <div class="avatar-dot">${esc(me.nickname.slice(0, 1))}</div>
+        <div style="flex:1">
+          <div style="font-size:15px;font-weight:600;">${esc(me.nickname)}</div>
+          <div style="font-size:12px;color:#a898a0;margin-top:3px;">${bound ? '已与 ' + esc(partner.nickname) + ' 绑定 💕' : '尚未绑定'}</div>
+        </div>
+        ${bound ? `<button class="btn btn-ghost" style="padding:6px 12px; font-size:12px;" onclick="openEditProfile()">修改个人资料</button>` : ''}
+      </div>
+    </div>
+  `;
+
+  if (!bound) {
+    html += `
+      <div class="card">
+        <div class="section-title">💞 绑定你的另一半</div>
+        <div class="field">
+          <label>输入 TA 的 6 位绑定码（演示随便输6位即可）</label>
+          <input type="text" id="inpBindCode" placeholder="例如：123456" maxlength="6">
+        </div>
+        <button class="btn btn-primary btn-block" onclick="doBind()">确认绑定</button>
+      </div>`;
+  } else {
+    if (days > 0) {
+      html += `
+        <div class="card love-card">
+          <div class="love-days">${days}</div>
+          <div class="love-label">在一起的日子（天）</div>
+          <div class="love-since">${esc(me.togetherDate)} 至今 · 与 ${esc(partner.nickname)}</div>
+        </div>`;
+    }
+
+    html += `
+      <div class="card">
+        <div class="section-title">🔔 提醒设置</div>
+        <div style="font-size:13px;color:#8a7a80;line-height:1.7;">
+          约定被接受后，将在开始前 <b style="color:#FF6B8A">2 小时</b> 提醒双方。（*网页版需保持页面开启）
+        </div>
+      </div>
+
+      <div class="card">
+        <button class="btn btn-gray btn-block" onclick="doUnbind()" style="color:#d9534f;">解除与 ${esc(partner.nickname)} 的绑定</button>
+      </div>
+    `;
+  }
+
+  html += `
+    <div class="card" style="background:#f9f9f9; border:1px dashed #ddd;">
+      <div class="section-title" style="color:#aaa; font-size:12px;">🔄 开发者测试工具</div>
+      <button class="btn btn-gray btn-block" style="font-size:13px;" onclick="switchIdentity()">切换到 ${me.openid === 'me_001' ? 'TA' : '我'} 的身份</button>
+      <div style="font-size:11px; color:#bbb; text-align:center; margin-top:8px;">（网页版仅供单人体验，无法进行双人跨设备实时同步）</div>
+    </div>
+    <div class="card">
+      <button class="btn btn-gray btn-block" onclick="resetAll()">清空所有数据</button>
+    </div>
+  `;
+  document.getElementById('mineContent').innerHTML = html;
+}
+
+function doBind() {
+  const code = document.getElementById('inpBindCode').value.trim();
+  if (code.length !== 6) return toast('请输入 6 位绑定码');
+  
+  const users = JSON.parse(localStorage.getItem(DB.UKEY) || '{}');
+  const me = getCurrentUser();
+  const partnerId = me.openid === 'me_001' ? 'partner_001' : 'me_001';
+  
+  if (!users[partnerId]) return toast('找不到该 ID');
+
+  me.boundPartner = partnerId;
+  me.togetherDate = defaultDateStr(0);
+  users[me.openid] = me;
+
+  users[partnerId].boundPartner = me.openid;
+  users[partnerId].togetherDate = defaultDateStr(0);
+
+  localStorage.setItem(DB.UKEY, JSON.stringify(users));
+  
+  toast('绑定成功，可以在美食页点菜啦！');
+  renderMine();
+}
+
+function doUnbind() {
+  if (!confirm('确定解除绑定吗？解除后将无法看到对方信息。')) return;
+  const users = JSON.parse(localStorage.getItem(DB.UKEY) || '{}');
+  const me = getCurrentUser();
+  const partnerId = me.boundPartner;
+  
+  me.boundPartner = '';
+  me.togetherDate = '';
+  users[me.openid] = me;
+  
+  if (partnerId && users[partnerId]) {
+    users[partnerId].boundPartner = '';
+    users[partnerId].togetherDate = '';
+  }
+  
+  localStorage.setItem(DB.UKEY, JSON.stringify(users));
+  toast('已解除绑定');
+  renderMine();
+}
+
+function openEditProfile() {
+  const me = getCurrentUser();
+  let bdayVal = me.birthday ? `2000-${me.birthday}` : '';
+  
+  showSheet(`
+    <div class="sheet-title">修改个人资料</div>
+    <div class="field">
+      <label>我的生日（仅自己可修改）</label>
+      <input type="date" id="editBday" value="${bdayVal}">
+    </div>
+    <button class="btn btn-primary btn-block" onclick="saveProfile()">保存修改</button>
+  `);
+}
+
+function saveProfile() {
+  const bdayVal = document.getElementById('editBday').value;
+  const me = getCurrentUser();
+  me.birthday = bdayVal ? bdayVal.slice(5) : '';
+  saveCurrentUser(me);
+  
+  closeSheet();
+  toast('生日已更新');
+  renderMine();
+}
+
+function resetAll() {
+  if (!confirm('清空所有数据？')) return;
+  localStorage.clear(); toast('已清空'); initUser(); switchTab('home');
+}
+
+/* =========================================================
+   初始化
+   ========================================================= */
+function updateNav() {
+  const me = getCurrentUser();
+  const el = document.getElementById('navWho');
+  el.innerHTML = `${me.openid === 'me_001' ? '我' : 'TA'} ▾`;
+}
+
+function initUser() {
+  let users = JSON.parse(localStorage.getItem(DB.UKEY) || '{}');
+  if (Object.keys(users).length === 0) {
+    users = {
+      'me_001': { openid: 'me_001', nickname: '我', birthday: '', boundPartner: '', togetherDate: '', dishes: ['番茄炒蛋', '可乐鸡翅'] },
+      'partner_001': { openid: 'partner_001', nickname: 'TA', birthday: '', boundPartner: '', togetherDate: '', dishes: ['红烧肉', '酸辣土豆丝'] }
+    };
+    localStorage.setItem(DB.UKEY, JSON.stringify(users));
+  }
+  updateNav();
+  
+  // 微信环境提示
+  const ua = navigator.userAgent.toLowerCase();
+  if (ua.indexOf('micromessenger') > -1) {
+    document.getElementById('tipBar').innerHTML = '⚠️ 在微信内可能无法选照片！<br>请点击右上角 ··· 选择“在浏览器中打开”';
+    document.getElementById('tipBar').style.background = '#FFEBEE';
+    document.getElementById('tipBar').style.color = '#D32F2F';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initUser(); switchTab('home');
+});
+</script>
+</body>
+</html>
